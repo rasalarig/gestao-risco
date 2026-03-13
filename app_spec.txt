@@ -1,0 +1,87 @@
+GRC Pro - Application Specification
+=========================================================
+
+## Overview
+GRC (Governance, Risk & Compliance) platform.
+All UI text is in Portuguese (pt-BR).
+
+## Tech Stack
+- **Frontend**: Angular 17+ (standalone components, Angular Material, SCSS)
+- **Backend**: Python FastAPI (async), SQLAlchemy 2.0, asyncpg, Alembic
+- **Database**: PostgreSQL 15 (via Docker Compose)
+- **Auth**: JWT (python-jose), bcrypt (passlib)
+
+## Architecture
+```
+project-root/
+  docker-compose.yml          # PostgreSQL 15
+  start.sh                    # Full startup script
+  backend/
+    app/
+      main.py                 # FastAPI app with CORS
+      config.py               # Settings via pydantic-settings
+      database.py             # Async SQLAlchemy engine/session
+      models/                 # SQLAlchemy ORM models
+      routers/                # API route handlers
+      schemas/                # Pydantic schemas
+      auth/                   # JWT + password hashing
+    alembic.ini
+    alembic/                  # DB migrations
+    requirements.txt
+  frontend/
+    src/
+      app/
+        app.component.ts      # Root component
+        app.config.ts          # App providers
+        app.routes.ts          # Route definitions
+        core/
+          services/            # AuthService, ApiService
+          guards/              # authGuard
+          interceptors/        # authInterceptor (adds Bearer token)
+          models/              # TypeScript interfaces
+        layout/
+          header/              # Blue top bar
+          sidebar/             # Dark blue left nav
+          main-layout/         # Layout wrapper
+        features/
+          home/                # 4 module cards dashboard
+          login/               # Login page
+          risks/               # (placeholder)
+          controls/            # (placeholder)
+          action-plans/        # (placeholder)
+          analytics/           # (placeholder)
+      styles.scss              # Global GRC Pro theme
+      environments/            # Environment configs
+    angular.json
+    proxy.conf.json            # /api -> localhost:8000
+    package.json
+```
+
+## Database (PostgreSQL)
+- Host: localhost:5432, DB: kpmg_risk, User: kpmg, Password: kpmg123
+- Tables: empresas, users, risk_categories, risks, risk_assessments,
+  risk_factors, controls, risk_controls, action_plans
+- All PKs are UUIDs
+
+## API Routes (prefix: /api/v1)
+- POST /auth/login, POST /auth/register, GET /auth/me
+- GET/POST /risks/, GET /risks/{id}, GET /risks/categories, POST /risks/categories
+- GET /risks/{id}/assessments, POST /risks/assessments, POST /risks/factors
+- GET/POST /controls/, GET /controls/{id}
+- GET/POST /action-plans/, GET /action-plans/{id}
+- GET /analytics/dashboard
+
+## Color Palette
+- Primary: #00338D (professional blue)
+- Secondary: #005EB8
+- Accent: #0091DA
+- Success: #00A3A1
+- Warning: #FFA300
+- Danger: #BC204B
+
+## Conventions
+- Backend: async/await everywhere, Depends() for DI
+- Frontend: standalone components (no NgModules), functional guards/interceptors
+- All models use UUID primary keys
+- API returns JSON; Pydantic schemas validate I/O
+- Font: Inter
